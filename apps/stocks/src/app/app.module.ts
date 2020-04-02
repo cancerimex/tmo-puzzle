@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { StocksAppConfigToken } from '@coding-challenge/stocks/data-access-app-config';
+import { STOCKSAPPCONFIGTOKEN } from '@coding-challenge/stocks/data-access-app-config';
 import { StocksDataAccessPriceQueryModule } from '@coding-challenge/stocks/data-access-price-query';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -39,7 +39,7 @@ import { environment } from '../environments/environment';
     }),
     StocksDataAccessPriceQueryModule
   ],
-  providers: [{ provide: StocksAppConfigToken, useValue: environment }],
+  providers: [{ provide: STOCKSAPPCONFIGTOKEN, useValue: environment }],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
