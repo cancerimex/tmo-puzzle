@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import {
   StocksAppConfig,
-  StocksAppConfigToken
+  STOCKSAPPCONFIGTOKEN
 } from '@coding-challenge/stocks/data-access-app-config';
 import { Effect } from '@ngrx/effects';
 import { DataPersistence } from '@nrwl/nx';
@@ -40,7 +40,7 @@ export class PriceQueryEffects {
   );
 
   constructor(
-    @Inject(StocksAppConfigToken) private env: StocksAppConfig,
+    @Inject(STOCKSAPPCONFIGTOKEN) private env: StocksAppConfig,
     private httpClient: HttpClient,
     private dataPersistence: DataPersistence<PriceQueryPartialState>
   ) {}
