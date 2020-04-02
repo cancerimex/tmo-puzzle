@@ -13,9 +13,9 @@ import { Chart } from './chart.model';
   styleUrls: ['./chart.component.css']
 })
 export class ChartComponent implements OnInit, OnDestroy {
-  @Input() data$: Observable<any>;
+  @Input() data$: Observable<(string | number)[][]>;
 
-  public chartData: [];
+  public chartData: (string | number)[][];
   public chart: Chart;
   private _subs: Subscription[] = [];
 

@@ -70,21 +70,51 @@ describe('StocksComponent', () => {
       expect(component.stockPickerForm.valid).toBeFalsy();
     });
 
-    it('should be invalid if only one value is set', () => {
-      const symbol = component.stockPickerForm.controls['symbol'];
-      expect(symbol.valid).toBeFalsy();
+    it('should be invalid if only two values are set', () => {
+      component.stockPickerForm.patchValue({ symbol: 'AAPL', periodFrom: '3/23/2020' });
+      expect(component.stockPickerForm.valid).toBeFalsy();
     });
 
-    it('should be valid if both values are set', () => {
-      component.stockPickerForm.setValue({ symbol: 'AAPL', period: '1m' });
+    it('should be valid all values are set', () => {
+      component.stockPickerForm.patchValue({ symbol: 'AAPL', periodFrom: '3/23/2020', periodTo: '3/27/2020' });
       expect(component.stockPickerForm.valid).toBeTruthy();
     });
-    
+
+    it('should change the periodTo value if its less than periodFrom', () => {
+      const periodFrom = component.stockPickerForm.controls['periodFrom'];
+      const periodTo = component.stockPickerForm.controls['periodTo'];
+      component.stockPickerForm.setValue({ symbol: 'AAPL', periodFrom: '3/23/2020', periodTo: '3/21/2020' });
+      fixture.detectChanges();
+      expect(periodFrom.value).toEqual('3/23/2020');
+      expect(periodTo.value).toEqual('3/23/2020');
+    });
+
     it('should call fetchQuote', () => {
-      component.stockPickerForm.setValue({ symbol: 'AAPL', period: '1m' });
+      component.stockPickerForm.setValue({ symbol: 'AAPL', periodFrom: '3/23/2020', periodTo: '3/27/2020' });
       component.fetchQuote();
       expect(priceQueryFacade.fetchQuote).toHaveBeenCalled();
-      expect(priceQueryFacade.fetchQuote).toHaveBeenCalledWith('AAPL', '1m');
+      expect(priceQueryFacade.fetchQuote).toHaveBeenCalledWith('AAPL', '3/23/2020', '3/27/2020');
     });
+
+    describe('Input', () => {
+      it('should be invald if nothing is set', () => {
+        const symbol = component.stockPickerForm.controls['symbol'];
+        expect(symbol.valid).toBeFalsy();
+      });
+
+      it('should have an error when touched but empty ', () => {
+        const symbol = component.stockPickerForm.controls['symbol'];
+        symbol.setValue('');
+        expect(symbol.hasError('required')).toBeTruthy();
+      });
+
+      it('should be valid it is set', () => {
+        const symbol = component.stockPickerForm.controls['symbol'];
+        expect(symbol.valid).toBeFalsy();
+        component.stockPickerForm.patchValue({ symbol: 'AAPL' });
+        expect(symbol.valid).toBeTruthy();
+      });
+    });
+    
   });
 });

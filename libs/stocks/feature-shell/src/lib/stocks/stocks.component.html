@@ -18,15 +18,46 @@
   </mat-form-field>
 
   <mat-form-field>
-    <mat-label for="period" id="label-period">Favorite time period</mat-label>
-    <mat-select formControlName="period" id="period">
-      <mat-option
-        *ngFor="let timePeriod of timePeriods"
-        [value]="timePeriod.value"
-      >
-        {{ timePeriod.viewValue }}
-      </mat-option>
-    </mat-select>
+    <input 
+      matInput 
+      [max]="maxDateFrom" 
+      [matDatepicker]="from" 
+      placeholder="From Date"
+      formControlName="periodFrom"
+    />
+    <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+    <mat-datepicker #from></mat-datepicker>
+    <mat-error
+      ><span 
+        *ngIf="
+          !stockPickerForm.get('periodFrom').valid && 
+          stockPickerForm.get('periodFrom').touched
+          "
+          >Please enter a valid date</span
+        >
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input 
+      matInput 
+      [max]="maxDateTo" 
+      [matDatepicker]="to" 
+      placeholder="To Date"
+      formControlName="periodTo"
+    />
+    <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+    <mat-datepicker #to></mat-datepicker>
+    <mat-error
+      ><span 
+        *ngIf="
+          !stockPickerForm.get('periodTo').valid && 
+          stockPickerForm.get('periodTo').touched
+          "
+          >Please enter a valid date</span
+        >
+    </mat-error>
+    <mat-error><span *ngIf="stockPickerForm.get('periodTo').errors?.validDate && (stockPickerForm.touched || stockPickerForm.dirty)">This date can not come before the from date</span></mat-error>
   </mat-form-field>
 </form>
 

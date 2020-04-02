@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { PriceQueryFacade } from '@coding-challenge/stocks/data-access-price-query';
 import { TimePeriod } from './stocks.model';
 import { Observable, Subscription } from 'rxjs';
-import { debounceTime, tap, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'coding-challenge-stocks',
@@ -23,6 +23,8 @@ export class StocksComponent implements OnInit, OnDestroy {
     { viewValue: 'Three months', value: '3m' },
     { viewValue: 'One month', value: '1m' }
   ];
+  public maxDateFrom = new Date();
+  public maxDateTo = new Date();
 
   private formValueSubscription: Subscription;
 
@@ -31,7 +33,8 @@ export class StocksComponent implements OnInit, OnDestroy {
   ngOnInit(): void { 
     this.stockPickerForm = this._fb.group({
       symbol: [null, Validators.required],
-      period: [null, Validators.required]
+      periodFrom: [null, [Validators.required, this.validateDate]],
+      periodTo: [null, [Validators.required, this.validateDate]]
     });
 
     this.formValueSubscription = this.stockPickerForm.valueChanges
@@ -47,8 +50,22 @@ export class StocksComponent implements OnInit, OnDestroy {
 
   public fetchQuote(): void {
     if (this.stockPickerForm.valid) {
-      const { symbol, period } = this.stockPickerForm.value;
-      this._priceQuery.fetchQuote(symbol, period);
+      const { symbol, periodFrom, periodTo } = this.stockPickerForm.value;
+      this._priceQuery.fetchQuote(symbol, periodFrom, periodTo);
     }
+  }
+
+  public validateDate(input: FormControl) {
+    if (!input.root || !input.root['controls']) {
+      return null;
+    }
+    const controls = input.root['controls'];
+    if (controls.periodFrom.value 
+        && controls.periodTo.value) {
+      return (controls.periodFrom.value > controls.periodTo.value) 
+        ? controls.periodTo.setValue(controls.periodFrom.value)
+        : null
+    }
+    return null;
   }
 }
