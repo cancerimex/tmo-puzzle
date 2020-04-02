@@ -1,20 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PriceQueryFacade } from '@coding-challenge/stocks/data-access-price-query';
+import { TimePeriod } from './stocks.model';
+import { Observable, Subscription } from 'rxjs';
+import { debounceTime, tap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'coding-challenge-stocks',
   templateUrl: './stocks.component.html',
   styleUrls: ['./stocks.component.css']
 })
-export class StocksComponent implements OnInit {
-  stockPickerForm: FormGroup;
-  symbol: string;
-  period: string;
-
-  quotes$ = this.priceQuery.priceQueries$;
-
-  timePeriods = [
+export class StocksComponent implements OnInit, OnDestroy {
+  public stockPickerForm: FormGroup;
+  public quotes$: Observable<(string | number)[][]> = this._priceQuery.priceQueries$;
+  public timePeriods: Array<TimePeriod> = [
     { viewValue: 'All available data', value: 'max' },
     { viewValue: 'Five years', value: '5y' },
     { viewValue: 'Two years', value: '2y' },
@@ -25,19 +24,31 @@ export class StocksComponent implements OnInit {
     { viewValue: 'One month', value: '1m' }
   ];
 
-  constructor(private fb: FormBuilder, private priceQuery: PriceQueryFacade) {
-    this.stockPickerForm = fb.group({
+  private formValueSubscription: Subscription;
+
+  constructor(private _fb: FormBuilder, private _priceQuery: PriceQueryFacade) {}
+
+  ngOnInit(): void { 
+    this.stockPickerForm = this._fb.group({
       symbol: [null, Validators.required],
       period: [null, Validators.required]
     });
+
+    this.formValueSubscription = this.stockPickerForm.valueChanges
+      .pipe(debounceTime(1000))
+      .subscribe(() => this.fetchQuote());
   }
 
-  ngOnInit() {}
+  ngOnDestroy(): void {
+    if (this.formValueSubscription) {
+      this.formValueSubscription.unsubscribe();
+    }
+  }
 
-  fetchQuote() {
+  public fetchQuote(): void {
     if (this.stockPickerForm.valid) {
       const { symbol, period } = this.stockPickerForm.value;
-      this.priceQuery.fetchQuote(symbol, period);
+      this._priceQuery.fetchQuote(symbol, period);
     }
   }
 }
