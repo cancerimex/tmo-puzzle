@@ -87,8 +87,4 @@ describe('StocksComponent', () => {
       expect(priceQueryFacade.fetchQuote).toHaveBeenCalledWith('AAPL', '1m');
     });
   });
-
-  
-
-
 });
