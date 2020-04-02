@@ -1,9 +1,11 @@
 <google-chart
-  *ngIf="data"
-  [title]="chart.title"
-  [type]="chart.type"
+  id="google-chart"
+  role="graphics-document document"
+  *ngIf="chartData && chartData.length"
+  [title]="chart?.title"
+  [type]="chart?.type"
   [data]="chartData"
-  [columnNames]="chart.columnNames"
-  [options]="chart.options"
+  [columnNames]="chart?.columnNames"
+  [options]="chart?.options"
 >
 </google-chart>
