@@ -17,7 +17,7 @@ describe('ChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ChartComponent);
     component = fixture.componentInstance;
-    component.data$ = of({});
+    component.data$ = of(['2020-03-03']['291.77']);
     fixture.detectChanges();
     spyOn(component, 'data$').and.returnValue({})
   });

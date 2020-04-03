@@ -16,6 +16,8 @@ import { NxModule } from '@nrwl/nx';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { PriceQueryFacade } from '@coding-challenge/stocks/data-access-price-query';
+import { cold, hot, time } from 'jest-marbles';
+import { tap } from 'rxjs/operators';
 
 describe('StocksComponent', () => {
   let component: StocksComponent;
@@ -53,16 +55,30 @@ describe('StocksComponent', () => {
     .compileComponents();
   }));
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     fixture = TestBed.createComponent(StocksComponent);
     component = fixture.componentInstance;
     priceQueryFacade = TestBed.get(PriceQueryFacade);
     spyOn(priceQueryFacade, 'fetchQuote');
+    spyOn(priceQueryFacade, 'priceQueries$');
+    priceQueryFacade.priceQueries$ = cold('a-b-c', { 
+      a: ['2020-03-03'][291.77], 
+      b: ['2020-03-04'][309.67], 
+      c: ['2020-03-05'][297.64], 
+    });
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should be called 3 times', () => {
+    const mock = jest.fn();
+    const stream$ = priceQueryFacade.priceQueries$.pipe(tap(mock));
+    expect(stream$).toSatisfyOnFlush(() => {
+        expect(mock).toHaveBeenCalledTimes(3);
+    });
   });
 
   describe('StockPickerForm', () => {

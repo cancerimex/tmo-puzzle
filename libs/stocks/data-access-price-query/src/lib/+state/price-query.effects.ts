@@ -24,9 +24,7 @@ export class PriceQueryEffects {
       run: (action: FetchPriceQuery, state: PriceQueryPartialState) => {
         return this.httpClient
           .get(
-            `${this.env.apiURL}/beta/stock/${action.symbol}/chart/${
-              'max'
-            }?token=${this.env.apiKey}`
+            `${this.env.apiURL}/stock/${action.symbol}/max?token=${this.env.apiKey}`
           )
           .pipe(
             map((resp: any[]) =>
