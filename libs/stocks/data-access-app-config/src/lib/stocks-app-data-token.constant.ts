@@ -1,3 +1,3 @@
 import { InjectionToken } from '@angular/core';
 
-export const StocksAppConfigToken = new InjectionToken('StocksAppConfig');
+export const STOCKSAPPCONFIGTOKEN = new InjectionToken('StocksAppConfig');

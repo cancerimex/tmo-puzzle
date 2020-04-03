@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ChartComponent } from './chart.component';
+import { SharedUiChartModule } from '../shared-ui-chart.module';
+import { of } from 'rxjs';
 
 describe('ChartComponent', () => {
   let component: ChartComponent;
@@ -8,7 +9,7 @@ describe('ChartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChartComponent ]
+      imports: [ SharedUiChartModule ]
     })
     .compileComponents();
   }));
@@ -16,7 +17,9 @@ describe('ChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ChartComponent);
     component = fixture.componentInstance;
+    component.data$ = of(['2020-03-03']['291.77']);
     fixture.detectChanges();
+    spyOn(component, 'data$').and.returnValue({})
   });
 
   it('should create', () => {

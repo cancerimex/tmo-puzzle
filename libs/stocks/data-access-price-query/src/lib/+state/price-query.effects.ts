@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import {
-  StocksAppConfig,
-  StocksAppConfigToken
+  STOCKSAPPCONFIGTOKEN,
+  StocksAppConfig
 } from '@coding-challenge/stocks/data-access-app-config';
 import { Effect } from '@ngrx/effects';
 import { DataPersistence } from '@nrwl/nx';
@@ -24,12 +24,15 @@ export class PriceQueryEffects {
       run: (action: FetchPriceQuery, state: PriceQueryPartialState) => {
         return this.httpClient
           .get(
-            `${this.env.apiURL}/beta/stock/${action.symbol}/chart/${
-              action.period
-            }?token=${this.env.apiKey}`
+            `${this.env.apiURL}/stock/${action.symbol}/max?token=${this.env.apiKey}`
           )
           .pipe(
-            map(resp => new PriceQueryFetched(resp as PriceQueryResponse[]))
+            map((resp: any[]) =>
+              new PriceQueryFetched(resp.filter(stock =>
+                new Date(stock.date) >= new Date(action.periodFrom)
+                && new Date(stock.date) <= new Date(action.periodTo)
+              ) as PriceQueryResponse[] )
+            )
           );
       },
 
@@ -40,7 +43,7 @@ export class PriceQueryEffects {
   );
 
   constructor(
-    @Inject(StocksAppConfigToken) private env: StocksAppConfig,
+    @Inject(STOCKSAPPCONFIGTOKEN) private env: StocksAppConfig,
     private httpClient: HttpClient,
     private dataPersistence: DataPersistence<PriceQueryPartialState>
   ) {}
